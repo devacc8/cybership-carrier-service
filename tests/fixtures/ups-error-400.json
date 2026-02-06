@@ -1,0 +1,10 @@
+{
+  "response": {
+    "errors": [
+      {
+        "code": "111210",
+        "message": "The requested service is unavailable between the selected locations"
+      }
+    ]
+  }
+}

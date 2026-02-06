@@ -1,0 +1,31 @@
+export enum CarrierCode {
+  UPS = 'UPS',
+  FEDEX = 'FEDEX',
+  USPS = 'USPS',
+  DHL = 'DHL',
+}
+
+export enum ServiceLevel {
+  GROUND = 'GROUND',
+  THREE_DAY_SELECT = 'THREE_DAY_SELECT',
+  SECOND_DAY_AIR = 'SECOND_DAY_AIR',
+  SECOND_DAY_AIR_AM = 'SECOND_DAY_AIR_AM',
+  NEXT_DAY_AIR_SAVER = 'NEXT_DAY_AIR_SAVER',
+  NEXT_DAY_AIR = 'NEXT_DAY_AIR',
+  NEXT_DAY_AIR_EARLY = 'NEXT_DAY_AIR_EARLY',
+  WORLDWIDE_EXPRESS = 'WORLDWIDE_EXPRESS',
+  WORLDWIDE_EXPEDITED = 'WORLDWIDE_EXPEDITED',
+  WORLDWIDE_EXPRESS_PLUS = 'WORLDWIDE_EXPRESS_PLUS',
+  STANDARD = 'STANDARD',
+  SAVER = 'SAVER',
+}
+
+export enum WeightUnit {
+  LBS = 'LBS',
+  KGS = 'KGS',
+}
+
+export enum DimensionUnit {
+  IN = 'IN',
+  CM = 'CM',
+}

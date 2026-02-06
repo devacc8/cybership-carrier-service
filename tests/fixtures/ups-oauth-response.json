@@ -1,0 +1,10 @@
+{
+  "access_token": "eyJhbGciOiJSUzM4NCIsInR5cCI6IkpXVCJ9.mock_token_payload.mock_signature",
+  "token_type": "Bearer",
+  "issued_at": "1706140800000",
+  "expires_in": "3600",
+  "client_id": "test_client_id",
+  "scope": "shipping",
+  "refresh_count": "0",
+  "status": "approved"
+}

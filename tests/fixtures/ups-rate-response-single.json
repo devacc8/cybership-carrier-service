@@ -1,0 +1,59 @@
+{
+  "RateResponse": {
+    "Response": {
+      "ResponseStatus": {
+        "Code": "1",
+        "Description": "Success"
+      },
+      "TransactionReference": {
+        "CustomerContext": "Rating Request"
+      }
+    },
+    "RatedShipment": [
+      {
+        "Service": {
+          "Code": "03",
+          "Description": ""
+        },
+        "BillingWeight": {
+          "UnitOfMeasurement": {
+            "Code": "LBS",
+            "Description": "Pounds"
+          },
+          "Weight": "10.0"
+        },
+        "TransportationCharges": {
+          "CurrencyCode": "USD",
+          "MonetaryValue": "15.72"
+        },
+        "ServiceOptionsCharges": {
+          "CurrencyCode": "USD",
+          "MonetaryValue": "0.00"
+        },
+        "TotalCharges": {
+          "CurrencyCode": "USD",
+          "MonetaryValue": "15.72"
+        },
+        "GuaranteedDelivery": {
+          "BusinessDaysInTransit": "5"
+        },
+        "RatedPackage": [
+          {
+            "TransportationCharges": {
+              "CurrencyCode": "USD",
+              "MonetaryValue": "15.72"
+            },
+            "ServiceOptionsCharges": {
+              "CurrencyCode": "USD",
+              "MonetaryValue": "0.00"
+            },
+            "TotalCharges": {
+              "CurrencyCode": "USD",
+              "MonetaryValue": "15.72"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

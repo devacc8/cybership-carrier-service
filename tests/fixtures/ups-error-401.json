@@ -1,0 +1,10 @@
+{
+  "response": {
+    "errors": [
+      {
+        "code": "250002",
+        "message": "Invalid Authentication Information"
+      }
+    ]
+  }
+}

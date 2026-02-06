@@ -1,0 +1,10 @@
+{
+  "response": {
+    "errors": [
+      {
+        "code": "429000",
+        "message": "Rate limit exceeded"
+      }
+    ]
+  }
+}
