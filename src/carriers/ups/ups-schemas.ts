@@ -5,7 +5,7 @@ const UpsMonetarySchema = z.object({
   MonetaryValue: z.string(),
 });
 
-const UpsRatedShipmentSchema = z.object({
+export const UpsRatedShipmentSchema = z.object({
   Service: z.object({
     Code: z.string(),
     Description: z.string().optional(),
@@ -82,7 +82,7 @@ export const UpsErrorResponseSchema = z.object({
 
 // ---- Request schema (used in tests to replace `as` casts) ----
 
-const UpsAddressSchema = z.object({
+export const UpsAddressSchema = z.object({
   AddressLine: z.array(z.string()),
   City: z.string(),
   StateProvinceCode: z.string().optional(),

@@ -8,6 +8,7 @@ export type {
   RateResponse,
   RateQuote,
   MonetaryAmount,
+  GuaranteedDelivery,
 } from './domain/types.js';
 
 // Domain enums
@@ -29,6 +30,10 @@ export type {
 // Domain schemas
 export {
   RateRequestSchema,
+  RateResponseSchema,
+  RateQuoteSchema,
+  MonetaryAmountSchema,
+  GuaranteedDeliverySchema,
   AddressSchema,
   ShipmentPackageSchema,
   PackageWeightSchema,
