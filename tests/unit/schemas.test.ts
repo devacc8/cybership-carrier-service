@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { RateRequestSchema, AddressSchema, ShipmentPackageSchema } from '../../src/domain/schemas.js';
-import { DimensionUnit, ServiceLevel, WeightUnit } from '../../src/domain/enums.js';
+import { DimensionUnit, WeightUnit } from '../../src/domain/enums.js';
 
 describe('Domain Schemas', () => {
   describe('AddressSchema', () => {
@@ -125,7 +125,7 @@ describe('Domain Schemas', () => {
     it('accepts request with optional serviceLevel', () => {
       const result = RateRequestSchema.safeParse({
         ...validRequest,
-        serviceLevel: ServiceLevel.GROUND,
+        serviceLevel: 'UPS_GROUND',
       });
       expect(result.success).toBe(true);
     });
@@ -134,14 +134,6 @@ describe('Domain Schemas', () => {
       const result = RateRequestSchema.safeParse({
         ...validRequest,
         packages: [],
-      });
-      expect(result.success).toBe(false);
-    });
-
-    it('rejects invalid service level', () => {
-      const result = RateRequestSchema.safeParse({
-        ...validRequest,
-        serviceLevel: 'INVALID_SERVICE',
       });
       expect(result.success).toBe(false);
     });

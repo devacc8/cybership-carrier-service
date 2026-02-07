@@ -1,5 +1,5 @@
 import type { Address, RateRequest, RateResponse, RateQuote } from '../../domain/types.js';
-import { CarrierCode, type ServiceLevel, WeightUnit } from '../../domain/enums.js';
+import { CarrierCode, WeightUnit } from '../../domain/enums.js';
 import type {
   UpsAddress,
   UpsRateRequestBody,
@@ -8,7 +8,7 @@ import type {
 } from './ups-types.js';
 import {
   UPS_SERVICE_CODE_MAP,
-  DOMAIN_TO_UPS_SERVICE_MAP,
+  SERVICE_LEVEL_TO_UPS_CODE,
   UPS_SERVICE_NAMES,
   type UpsConfig,
 } from './ups-config.js';
@@ -21,7 +21,7 @@ export class UpsRatingMapper {
     const requestOption = hasServiceLevel ? 'Rate' : 'Shop';
 
     const serviceCode = hasServiceLevel
-      ? DOMAIN_TO_UPS_SERVICE_MAP[request.serviceLevel!] ?? '03'
+      ? SERVICE_LEVEL_TO_UPS_CODE[request.serviceLevel!] ?? '03'
       : '03';
 
     const body: UpsRateRequestBody = {
@@ -104,7 +104,7 @@ export class UpsRatingMapper {
 
   private mapRatedShipment(shipment: UpsRatedShipment): RateQuote {
     const serviceCode = shipment.Service.Code;
-    const serviceLevel: ServiceLevel =
+    const serviceLevel =
       UPS_SERVICE_CODE_MAP[serviceCode] ?? UPS_SERVICE_CODE_MAP['03'];
 
     return {
@@ -122,7 +122,9 @@ export class UpsRatingMapper {
       },
       billingWeight: {
         value: parseFloat(shipment.BillingWeight.Weight),
-        unit: (shipment.BillingWeight.UnitOfMeasurement.Code as WeightUnit) ?? WeightUnit.LBS,
+        unit: shipment.BillingWeight.UnitOfMeasurement.Code === 'KGS'
+          ? WeightUnit.KGS
+          : WeightUnit.LBS,
       },
       ...(shipment.GuaranteedDelivery
         ? {

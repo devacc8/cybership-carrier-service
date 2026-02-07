@@ -31,7 +31,8 @@ describe('CarrierRegistry', () => {
     try {
       registry.get(CarrierCode.FEDEX);
     } catch (e) {
-      expect((e as CarrierError).code).toBe(CarrierErrorCode.CARRIER_NOT_FOUND);
+      expect(e).toBeInstanceOf(CarrierError);
+      expect((e as InstanceType<typeof CarrierError>).code).toBe(CarrierErrorCode.CARRIER_NOT_FOUND);
     }
   });
 

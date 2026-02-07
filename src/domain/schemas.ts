@@ -1,5 +1,7 @@
 import { z } from 'zod';
-import { DimensionUnit, ServiceLevel, WeightUnit } from './enums.js';
+import { CarrierCode, DimensionUnit, WeightUnit } from './enums.js';
+
+// ---- Input schemas ----
 
 export const AddressSchema = z.object({
   name: z.string().max(35).optional(),
@@ -32,6 +34,33 @@ export const RateRequestSchema = z.object({
   origin: AddressSchema,
   destination: AddressSchema,
   packages: z.array(ShipmentPackageSchema).min(1).max(200),
-  serviceLevel: z.nativeEnum(ServiceLevel).optional(),
+  serviceLevel: z.string().optional(),
   shipFrom: AddressSchema.optional(),
+});
+
+// ---- Output schemas ----
+
+export const MonetaryAmountSchema = z.object({
+  amount: z.number(),
+  currency: z.string(),
+});
+
+export const GuaranteedDeliverySchema = z.object({
+  businessDays: z.number(),
+  deliveryByTime: z.string().optional(),
+});
+
+export const RateQuoteSchema = z.object({
+  carrier: z.nativeEnum(CarrierCode),
+  serviceLevel: z.string(),
+  serviceName: z.string(),
+  totalCharges: MonetaryAmountSchema,
+  transportationCharges: MonetaryAmountSchema,
+  billingWeight: PackageWeightSchema,
+  guaranteedDelivery: GuaranteedDeliverySchema.optional(),
+});
+
+export const RateResponseSchema = z.object({
+  quotes: z.array(RateQuoteSchema),
+  warnings: z.array(z.string()).optional(),
 });

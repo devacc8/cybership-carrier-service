@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { RateService } from '../../src/core/rate-service.js';
 import { CarrierRegistry } from '../../src/core/carrier-registry.js';
-import { CarrierCode, ServiceLevel, WeightUnit } from '../../src/domain/enums.js';
+import { CarrierCode, WeightUnit } from '../../src/domain/enums.js';
 import { CarrierError, CarrierErrorCode } from '../../src/domain/errors.js';
 import type { CarrierProvider } from '../../src/domain/interfaces.js';
 import type { RateRequest, RateResponse } from '../../src/domain/types.js';
@@ -79,7 +79,7 @@ describe('RateService', () => {
       quotes: [
         {
           carrier: CarrierCode.UPS,
-          serviceLevel: ServiceLevel.GROUND,
+          serviceLevel: 'GROUND',
           serviceName: 'UPS Ground',
           totalCharges: { amount: 15.72, currency: 'USD' },
           transportationCharges: { amount: 15.72, currency: 'USD' },
@@ -112,7 +112,7 @@ describe('RateService', () => {
           quotes: [
             {
               carrier: CarrierCode.UPS,
-              serviceLevel: ServiceLevel.GROUND,
+              serviceLevel: 'GROUND',
               serviceName: 'UPS Ground',
               totalCharges: { amount: 20.0, currency: 'USD' },
               transportationCharges: { amount: 20.0, currency: 'USD' },
@@ -127,7 +127,7 @@ describe('RateService', () => {
           quotes: [
             {
               carrier: CarrierCode.FEDEX,
-              serviceLevel: ServiceLevel.GROUND,
+              serviceLevel: 'GROUND',
               serviceName: 'FedEx Ground',
               totalCharges: { amount: 12.5, currency: 'USD' },
               transportationCharges: { amount: 12.5, currency: 'USD' },
@@ -153,7 +153,7 @@ describe('RateService', () => {
           quotes: [
             {
               carrier: CarrierCode.UPS,
-              serviceLevel: ServiceLevel.GROUND,
+              serviceLevel: 'GROUND',
               serviceName: 'UPS Ground',
               totalCharges: { amount: 15.0, currency: 'USD' },
               transportationCharges: { amount: 15.0, currency: 'USD' },

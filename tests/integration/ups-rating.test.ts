@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { UpsProvider } from '../../src/carriers/ups/ups-provider.js';
 import { MockHttpClient } from '../helpers/mock-http-client.js';
-import { CarrierCode, DimensionUnit, ServiceLevel, WeightUnit } from '../../src/domain/enums.js';
+import { CarrierCode, DimensionUnit, WeightUnit } from '../../src/domain/enums.js';
+import { UpsServiceLevel } from '../../src/carriers/ups/ups-config.js';
 import type { RateRequest } from '../../src/domain/types.js';
 import type { UpsConfig } from '../../src/carriers/ups/ups-config.js';
-import type { UpsRateRequestBody } from '../../src/carriers/ups/ups-types.js';
+import { UpsRateRequestBodySchema } from '../../src/carriers/ups/ups-schemas.js';
 import oauthFixture from '../fixtures/ups-oauth-response.json';
 import shopFixture from '../fixtures/ups-rate-response-shop.json';
 import singleFixture from '../fixtures/ups-rate-response-single.json';
@@ -75,7 +76,7 @@ describe('UPS Rating Integration', () => {
 
     // First request is OAuth, second is rating
     expect(http.requests).toHaveLength(2);
-    const rateBody = http.requests[1].body as UpsRateRequestBody;
+    const rateBody = UpsRateRequestBodySchema.parse(http.requests[1].body);
 
     expect(rateBody.RateRequest.Request.RequestOption).toBe('Shop');
     expect(rateBody.RateRequest.Shipment.Shipper.Name).toBe('Acme Corp');
@@ -96,11 +97,11 @@ describe('UPS Rating Integration', () => {
 
     expect(result.quotes).toHaveLength(3);
     expect(result.quotes[0].carrier).toBe(CarrierCode.UPS);
-    expect(result.quotes[0].serviceLevel).toBe(ServiceLevel.GROUND);
+    expect(result.quotes[0].serviceLevel).toBe(UpsServiceLevel.GROUND);
     expect(result.quotes[0].totalCharges.amount).toBe(15.72);
     expect(result.quotes[0].totalCharges.currency).toBe('USD');
-    expect(result.quotes[1].serviceLevel).toBe(ServiceLevel.SECOND_DAY_AIR);
-    expect(result.quotes[2].serviceLevel).toBe(ServiceLevel.NEXT_DAY_AIR);
+    expect(result.quotes[1].serviceLevel).toBe(UpsServiceLevel.SECOND_DAY_AIR);
+    expect(result.quotes[2].serviceLevel).toBe(UpsServiceLevel.NEXT_DAY_AIR);
   });
 
   it('returns single RateQuote for specific service level', async () => {
@@ -112,11 +113,11 @@ describe('UPS Rating Integration', () => {
 
     const result = await provider.getRates({
       ...sampleRequest,
-      serviceLevel: ServiceLevel.GROUND,
+      serviceLevel: UpsServiceLevel.GROUND,
     });
 
     expect(result.quotes).toHaveLength(1);
-    expect(result.quotes[0].serviceLevel).toBe(ServiceLevel.GROUND);
+    expect(result.quotes[0].serviceLevel).toBe(UpsServiceLevel.GROUND);
 
     // URL should contain /Rate not /Shop
     expect(http.requests[1].url).toContain('/Rate');

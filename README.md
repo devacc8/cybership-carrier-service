@@ -49,7 +49,7 @@ src/
 │   ├── schemas.ts             # Zod runtime validation for all domain types
 │   ├── interfaces.ts          # CarrierProvider, AuthProvider, HttpClient
 │   ├── errors.ts              # CarrierError with structured error codes
-│   └── enums.ts               # ServiceLevel, WeightUnit, DimensionUnit, CarrierCode
+│   └── enums.ts               # CarrierCode, WeightUnit, DimensionUnit
 ├── core/                      # Orchestration (depends only on domain interfaces)
 │   ├── carrier-registry.ts    # Maps CarrierCode → CarrierProvider
 │   ├── rate-service.ts        # Validates input → delegates → returns normalized rates
@@ -60,7 +60,7 @@ src/
 │   ├── ups-rating-mapper.ts   # Domain ↔ UPS type mapping (the key boundary)
 │   ├── ups-types.ts           # Raw UPS API shapes (PascalCase, string values)
 │   ├── ups-schemas.ts         # Zod schemas for UPS API response validation
-│   └── ups-config.ts          # UPS endpoints, service code maps
+│   └── ups-config.ts          # UPS endpoints, service code maps, UpsServiceLevel
 ├── config/
 │   └── env.ts                 # Environment variable loader with Zod validation
 └── index.ts                   # Public API barrel export

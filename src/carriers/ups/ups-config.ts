@@ -1,5 +1,3 @@
-import { ServiceLevel } from '../../domain/enums.js';
-
 export interface UpsConfig {
   clientId: string;
   clientSecret: string;
@@ -12,38 +10,46 @@ export interface UpsConfig {
   ratingTimeoutMs: number;
 }
 
-// UPS service code → domain ServiceLevel
-export const UPS_SERVICE_CODE_MAP: Record<string, ServiceLevel> = {
-  '01': ServiceLevel.NEXT_DAY_AIR,
-  '02': ServiceLevel.SECOND_DAY_AIR,
-  '03': ServiceLevel.GROUND,
-  '07': ServiceLevel.WORLDWIDE_EXPRESS,
-  '08': ServiceLevel.WORLDWIDE_EXPEDITED,
-  '11': ServiceLevel.STANDARD,
-  '12': ServiceLevel.THREE_DAY_SELECT,
-  '13': ServiceLevel.NEXT_DAY_AIR_SAVER,
-  '14': ServiceLevel.WORLDWIDE_EXPRESS_PLUS,
-  '15': ServiceLevel.NEXT_DAY_AIR_EARLY,
-  '59': ServiceLevel.SECOND_DAY_AIR_AM,
-  '65': ServiceLevel.SAVER,
+// UPS service levels — carrier-specific, not part of domain layer.
+// Each carrier defines its own service level strings.
+export const UpsServiceLevel = {
+  NEXT_DAY_AIR: 'UPS_NEXT_DAY_AIR',
+  NEXT_DAY_AIR_SAVER: 'UPS_NEXT_DAY_AIR_SAVER',
+  NEXT_DAY_AIR_EARLY: 'UPS_NEXT_DAY_AIR_EARLY',
+  SECOND_DAY_AIR: 'UPS_SECOND_DAY_AIR',
+  SECOND_DAY_AIR_AM: 'UPS_SECOND_DAY_AIR_AM',
+  THREE_DAY_SELECT: 'UPS_THREE_DAY_SELECT',
+  GROUND: 'UPS_GROUND',
+  STANDARD: 'UPS_STANDARD',
+  WORLDWIDE_EXPRESS: 'UPS_WORLDWIDE_EXPRESS',
+  WORLDWIDE_EXPEDITED: 'UPS_WORLDWIDE_EXPEDITED',
+  WORLDWIDE_EXPRESS_PLUS: 'UPS_WORLDWIDE_EXPRESS_PLUS',
+  SAVER: 'UPS_SAVER',
+} as const;
+
+export type UpsServiceLevelValue =
+  (typeof UpsServiceLevel)[keyof typeof UpsServiceLevel];
+
+// UPS API service code → service level string
+export const UPS_SERVICE_CODE_MAP: Record<string, string> = {
+  '01': UpsServiceLevel.NEXT_DAY_AIR,
+  '02': UpsServiceLevel.SECOND_DAY_AIR,
+  '03': UpsServiceLevel.GROUND,
+  '07': UpsServiceLevel.WORLDWIDE_EXPRESS,
+  '08': UpsServiceLevel.WORLDWIDE_EXPEDITED,
+  '11': UpsServiceLevel.STANDARD,
+  '12': UpsServiceLevel.THREE_DAY_SELECT,
+  '13': UpsServiceLevel.NEXT_DAY_AIR_SAVER,
+  '14': UpsServiceLevel.WORLDWIDE_EXPRESS_PLUS,
+  '15': UpsServiceLevel.NEXT_DAY_AIR_EARLY,
+  '59': UpsServiceLevel.SECOND_DAY_AIR_AM,
+  '65': UpsServiceLevel.SAVER,
 };
 
-// Domain ServiceLevel → UPS service code
-export const DOMAIN_TO_UPS_SERVICE_MAP: Partial<Record<ServiceLevel, string>> =
-  {
-    [ServiceLevel.NEXT_DAY_AIR]: '01',
-    [ServiceLevel.SECOND_DAY_AIR]: '02',
-    [ServiceLevel.GROUND]: '03',
-    [ServiceLevel.WORLDWIDE_EXPRESS]: '07',
-    [ServiceLevel.WORLDWIDE_EXPEDITED]: '08',
-    [ServiceLevel.STANDARD]: '11',
-    [ServiceLevel.THREE_DAY_SELECT]: '12',
-    [ServiceLevel.NEXT_DAY_AIR_SAVER]: '13',
-    [ServiceLevel.WORLDWIDE_EXPRESS_PLUS]: '14',
-    [ServiceLevel.NEXT_DAY_AIR_EARLY]: '15',
-    [ServiceLevel.SECOND_DAY_AIR_AM]: '59',
-    [ServiceLevel.SAVER]: '65',
-  };
+// Service level string → UPS API service code
+export const SERVICE_LEVEL_TO_UPS_CODE: Record<string, string> = Object.fromEntries(
+  Object.entries(UPS_SERVICE_CODE_MAP).map(([code, level]) => [level, code]),
+);
 
 export const UPS_SERVICE_NAMES: Record<string, string> = {
   '01': 'UPS Next Day Air',

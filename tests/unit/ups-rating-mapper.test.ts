@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { UpsRatingMapper } from '../../src/carriers/ups/ups-rating-mapper.js';
-import { CarrierCode, DimensionUnit, ServiceLevel, WeightUnit } from '../../src/domain/enums.js';
+import { CarrierCode, DimensionUnit, WeightUnit } from '../../src/domain/enums.js';
+import { UpsServiceLevel } from '../../src/carriers/ups/ups-config.js';
 import type { RateRequest } from '../../src/domain/types.js';
 import type { UpsConfig } from '../../src/carriers/ups/ups-config.js';
+import { UpsRateResponseSchema } from '../../src/carriers/ups/ups-schemas.js';
 import shopFixture from '../fixtures/ups-rate-response-shop.json';
 import singleFixture from '../fixtures/ups-rate-response-single.json';
-import type { UpsRateResponseBody } from '../../src/carriers/ups/ups-types.js';
 
 const TEST_CONFIG: UpsConfig = {
   clientId: 'test',
@@ -49,6 +50,9 @@ const sampleRequest: RateRequest = {
     },
   ],
 };
+
+const parsedShopFixture = UpsRateResponseSchema.parse(shopFixture);
+const parsedSingleFixture = UpsRateResponseSchema.parse(singleFixture);
 
 describe('UpsRatingMapper', () => {
   const mapper = new UpsRatingMapper(TEST_CONFIG);
@@ -123,14 +127,14 @@ describe('UpsRatingMapper', () => {
     });
 
     it('sets RequestOption to Rate when serviceLevel provided', () => {
-      const req = { ...sampleRequest, serviceLevel: ServiceLevel.GROUND };
+      const req = { ...sampleRequest, serviceLevel: UpsServiceLevel.GROUND };
       const result = mapper.toUpsRateRequest(req);
       expect(result.RateRequest.Request.RequestOption).toBe('Rate');
       expect(result.RateRequest.Shipment.Service?.Code).toBe('03');
     });
 
     it('maps NEXT_DAY_AIR service level to UPS code 01', () => {
-      const req = { ...sampleRequest, serviceLevel: ServiceLevel.NEXT_DAY_AIR };
+      const req = { ...sampleRequest, serviceLevel: UpsServiceLevel.NEXT_DAY_AIR };
       const result = mapper.toUpsRateRequest(req);
       expect(result.RateRequest.Shipment.Service?.Code).toBe('01');
     });
@@ -179,21 +183,21 @@ describe('UpsRatingMapper', () => {
 
   describe('toRateResponse', () => {
     it('maps Shop response with 3 services to 3 RateQuotes', () => {
-      const result = mapper.toRateResponse(shopFixture as UpsRateResponseBody);
+      const result = mapper.toRateResponse(parsedShopFixture);
 
       expect(result.quotes).toHaveLength(3);
     });
 
-    it('maps UPS service codes to domain ServiceLevel', () => {
-      const result = mapper.toRateResponse(shopFixture as UpsRateResponseBody);
+    it('maps UPS service codes to UPS service levels', () => {
+      const result = mapper.toRateResponse(parsedShopFixture);
 
-      expect(result.quotes[0].serviceLevel).toBe(ServiceLevel.GROUND);
-      expect(result.quotes[1].serviceLevel).toBe(ServiceLevel.SECOND_DAY_AIR);
-      expect(result.quotes[2].serviceLevel).toBe(ServiceLevel.NEXT_DAY_AIR);
+      expect(result.quotes[0].serviceLevel).toBe(UpsServiceLevel.GROUND);
+      expect(result.quotes[1].serviceLevel).toBe(UpsServiceLevel.SECOND_DAY_AIR);
+      expect(result.quotes[2].serviceLevel).toBe(UpsServiceLevel.NEXT_DAY_AIR);
     });
 
     it('maps service names correctly', () => {
-      const result = mapper.toRateResponse(shopFixture as UpsRateResponseBody);
+      const result = mapper.toRateResponse(parsedShopFixture);
 
       expect(result.quotes[0].serviceName).toBe('UPS Ground');
       expect(result.quotes[1].serviceName).toBe('UPS 2nd Day Air');
@@ -201,7 +205,7 @@ describe('UpsRatingMapper', () => {
     });
 
     it('sets carrier to UPS on all quotes', () => {
-      const result = mapper.toRateResponse(shopFixture as UpsRateResponseBody);
+      const result = mapper.toRateResponse(parsedShopFixture);
 
       for (const quote of result.quotes) {
         expect(quote.carrier).toBe(CarrierCode.UPS);
@@ -209,7 +213,7 @@ describe('UpsRatingMapper', () => {
     });
 
     it('parses monetary string values to numbers', () => {
-      const result = mapper.toRateResponse(shopFixture as UpsRateResponseBody);
+      const result = mapper.toRateResponse(parsedShopFixture);
 
       expect(result.quotes[0].totalCharges.amount).toBe(15.72);
       expect(result.quotes[0].totalCharges.currency).toBe('USD');
@@ -219,21 +223,21 @@ describe('UpsRatingMapper', () => {
     });
 
     it('parses billing weight as number', () => {
-      const result = mapper.toRateResponse(shopFixture as UpsRateResponseBody);
+      const result = mapper.toRateResponse(parsedShopFixture);
 
       expect(result.quotes[0].billingWeight.value).toBe(10.0);
       expect(result.quotes[0].billingWeight.unit).toBe(WeightUnit.LBS);
     });
 
     it('maps guaranteed delivery with businessDays', () => {
-      const result = mapper.toRateResponse(shopFixture as UpsRateResponseBody);
+      const result = mapper.toRateResponse(parsedShopFixture);
 
       expect(result.quotes[0].guaranteedDelivery?.businessDays).toBe(5);
       expect(result.quotes[0].guaranteedDelivery?.deliveryByTime).toBeUndefined();
     });
 
     it('maps guaranteed delivery with deliveryByTime', () => {
-      const result = mapper.toRateResponse(shopFixture as UpsRateResponseBody);
+      const result = mapper.toRateResponse(parsedShopFixture);
 
       expect(result.quotes[2].guaranteedDelivery?.businessDays).toBe(1);
       expect(result.quotes[2].guaranteedDelivery?.deliveryByTime).toBe(
@@ -242,27 +246,23 @@ describe('UpsRatingMapper', () => {
     });
 
     it('extracts warnings from response alerts', () => {
-      const result = mapper.toRateResponse(shopFixture as UpsRateResponseBody);
+      const result = mapper.toRateResponse(parsedShopFixture);
 
       expect(result.warnings).toHaveLength(1);
       expect(result.warnings![0]).toContain('110971');
     });
 
     it('omits warnings when no alerts present', () => {
-      const result = mapper.toRateResponse(
-        singleFixture as UpsRateResponseBody,
-      );
+      const result = mapper.toRateResponse(parsedSingleFixture);
 
       expect(result.warnings).toBeUndefined();
     });
 
     it('maps single service response correctly', () => {
-      const result = mapper.toRateResponse(
-        singleFixture as UpsRateResponseBody,
-      );
+      const result = mapper.toRateResponse(parsedSingleFixture);
 
       expect(result.quotes).toHaveLength(1);
-      expect(result.quotes[0].serviceLevel).toBe(ServiceLevel.GROUND);
+      expect(result.quotes[0].serviceLevel).toBe(UpsServiceLevel.GROUND);
       expect(result.quotes[0].totalCharges.amount).toBe(15.72);
     });
   });

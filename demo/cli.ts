@@ -3,7 +3,6 @@ import {
   RateService,
   UpsProvider,
   CarrierCode,
-  ServiceLevel,
   WeightUnit,
   DimensionUnit,
 } from '../src/index.js';

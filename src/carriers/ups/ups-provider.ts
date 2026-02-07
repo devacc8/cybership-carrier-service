@@ -4,8 +4,7 @@ import { CarrierCode } from '../../domain/enums.js';
 import { CarrierError, CarrierErrorCode } from '../../domain/errors.js';
 import { UpsAuthProvider } from './ups-auth.js';
 import { UpsRatingMapper } from './ups-rating-mapper.js';
-import { UpsRateResponseSchema } from './ups-schemas.js';
-import type { UpsErrorResponse } from './ups-types.js';
+import { UpsRateResponseSchema, UpsErrorResponseSchema } from './ups-schemas.js';
 import type { UpsConfig } from './ups-config.js';
 
 export class UpsProvider implements CarrierProvider {
@@ -63,16 +62,20 @@ export class UpsProvider implements CarrierProvider {
       }
 
       if (response.status >= 400) {
-        const errorBody = response.data as unknown as UpsErrorResponse;
+        const errorParsed = UpsErrorResponseSchema.safeParse(response.data);
+        const errorMessage = errorParsed.success
+          ? errorParsed.data.response.errors[0]?.message
+          : undefined;
+
         throw new CarrierError({
           code: CarrierErrorCode.CARRIER_API_ERROR,
-          message:
-            errorBody?.response?.errors?.[0]?.message ??
-            `UPS API error: ${response.status}`,
+          message: errorMessage ?? `UPS API error: ${response.status}`,
           carrier: 'UPS',
           httpStatus: response.status,
           retryable: response.status >= 500,
-          details: { errors: errorBody?.response?.errors },
+          details: errorParsed.success
+            ? { errors: errorParsed.data.response.errors }
+            : { rawData: response.data },
         });
       }
 

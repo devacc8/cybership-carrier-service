@@ -13,7 +13,6 @@ export type {
 // Domain enums
 export {
   CarrierCode,
-  ServiceLevel,
   WeightUnit,
   DimensionUnit,
 } from './domain/enums.js';
@@ -47,6 +46,7 @@ export { FetchHttpClient } from './core/http-client.js';
 // UPS carrier
 export { UpsProvider } from './carriers/ups/ups-provider.js';
 export type { UpsConfig } from './carriers/ups/ups-config.js';
+export { UpsServiceLevel } from './carriers/ups/ups-config.js';
 
 // Configuration
 export { loadUpsConfig } from './config/env.js';
